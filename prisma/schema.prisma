@@ -37,8 +37,46 @@ model Profile {
   lastName  String?  @map("last_name") @db.VarChar(50)
   about     String?  @db.VarChar(500)
   accountId Int      @unique @map("account_id")
-  Account   Account  @relation(fields: [accountId], references: [id])
+  account   Account  @relation(fields: [accountId], references: [id])
+  boards    Board[]
 
   @@index([firstName, lastName])
   @@map("profiles")
+}
+
+model Board {
+  id        Int         @id @default(autoincrement())
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+  name      String      @db.VarChar(255)
+  isPublic  Boolean     @default(false) @map("is_public")
+  profileId Int         @map("profile_id")
+  profile   Profile     @relation(fields: [profileId], references: [id])
+  pins      BoardPins[]
+
+  @@index([isPublic])
+  @@map("boards")
+}
+
+model Pin {
+  id        Int         @id @default(autoincrement())
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+  name      String      @db.VarChar(255)
+  image     String      @db.VarChar(500)
+  boards    BoardPins[]
+
+  @@map("pins")
+}
+
+model BoardPins {
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  pinId     Int
+  pins      Pin      @relation(fields: [pinId], references: [id])
+  boardId   Int
+  board     Board    @relation(fields: [boardId], references: [id])
+
+  @@id([pinId, boardId])
+  @@map("board_pins")
 }
