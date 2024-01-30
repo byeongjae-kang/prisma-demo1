@@ -8,7 +8,8 @@
     "dev": "tsnd --inspect -- src/index.ts",
     "test": "jest --coverage --passWithNoTests",
     "build": "tsc",
-    "start": "npm run build && NODE_ENV=production node build"
+    "start": "npm run build && NODE_ENV=production node build",
+    "db:seed": "prisma db seed"
   },
   "keywords": [],
   "author": "",
@@ -40,5 +41,8 @@
       "eslint --cache --fix",
       "prettier --write"
     ]
+  },
+  "prisma": {
+    "seed": "tsnd --inspect -- prisma/seeds.ts"
   }
 }
