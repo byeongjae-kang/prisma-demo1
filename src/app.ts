@@ -1,28 +1,21 @@
+import cookieSession from 'cookie-session';
 import express, { Request, Response } from 'express';
-import { prisma } from '../prisma/index';
+import { router as authRouter } from './routes/auth.router';
+import { router as boardRouter } from './routes/board.router';
+import { router as pinsRouter } from './routes/pins.router';
 export const app = express();
 
+app.use(
+  cookieSession({
+    keys: ['secret'],
+    maxAge: 1000 * 60 * 60 * 24 // 1day
+  })
+);
 app.use(express.json());
 
-app.post('/auth/register', async (req, res) => {
-  const { email, password } = req.body;
-
-  const existing = await prisma.account.findUnique({
-    where: {
-      email
-    }
-  });
-
-  if (existing) {
-    res.status(409).json({ message: 'email already exists!!' });
-  }
-
-  const user = await prisma.account.create({
-    data: { email, password, profile: { create: {} } }
-  });
-
-  res.status(201).json(user);
-});
+app.use('/auth', authRouter);
+app.use('/boards', boardRouter);
+app.use('/pins', pinsRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello world');
